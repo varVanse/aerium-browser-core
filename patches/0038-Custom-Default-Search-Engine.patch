@@ -1,46 +1,48 @@
-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Aerium Maintainers <dev@aerium-browser.org>
-Date: Thu, 5 Nov 2026 00:00:00 +0000
-Subject: [PATCH] Set custom default search engine and prepopulated entries
+From: Custom Engine Patch <dev@local>
+Subject: [PATCH] search: restore Google as default prepopulated search engine
 
+Set Google as the first-choice engine in the fallback list and bump
+kCurrentDataVersion so existing local profiles and Android databases
+refresh to Google rather than DuckDuckGo or other defaults.
 ---
- .../search_engines/prepopulated_engines.json       | 14 ++++++++++++++
- .../search_engines/template_url_prepopulate_data.cc|  4 ++--
- 2 files changed, 16 insertions(+), 2 deletions(-)
+ components/search_engines/template_url_prepopulate_data.cc | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/components/search_engines/prepopulated_engines.json b/components/search_engines/prepopulated_engines.json
-index 1111111..2222222 100644
---- a/components/search_engines/prepopulated_engines.json
-+++ b/components/search_engines/prepopulated_engines.json
-@@ -20,6 +20,20 @@
-   // The following engines are available globally.
-   "elements": {
-+    "aerium_search": {
-+      "name": "DuckDuckGo",
-+      "keyword": "duckduckgo.com",
-+      "favicon_url": "https://duckduckgo.com/favicon.ico",
-+      "search_url": "https://duckduckgo.com/?q={searchTerms}",
-+      "suggest_url": "https://duckduckgo.com/ac/?q={searchTerms}&type=list",
-+      "type": "SEARCH_ENGINE_DUCKDUCKGO",
-+      "id": 1001
-+    },
-     "google": {
-       "name": "Google",
-       "keyword": "google.com",
 diff --git a/components/search_engines/template_url_prepopulate_data.cc b/components/search_engines/template_url_prepopulate_data.cc
-index 3333333..4444444 100644
+index 8e482ab..7bc549f 100644
 --- a/components/search_engines/template_url_prepopulate_data.cc
 +++ b/components/search_engines/template_url_prepopulate_data.cc
-@@ -52,8 +52,8 @@ namespace TemplateURLPrepopulateData {
- // Default search engine fallback when no region-specific profile is set
- const PrepopulatedEngine* const kDefaultEngines[] = {
--    &google,
--    &bing,
-+    &aerium_search,
-+    &duckduckgo,
-+    &google,
- };
+@@ -47,7 +47,7 @@ namespace {
+ // If you change the engine lists, you must increment this value. This will
+ // cause existing users with unmodified default search providers to get the new
+ // list.
+-const int kCurrentDataVersion = 180;
++const int kCurrentDataVersion = 181;
  
- }  // namespace TemplateURLPrepopulateData
+ // Default search engines list for countries without country-specific list.
+ const PrepopulatedEngine* const engines_default[] = {
++    &google,
+     &duckduckgo,
+-    &google,
+     &bing,
+     &yahoo,
+ };
+@@ -128,11 +128,11 @@ int GetDataVersion(PrefService* prefs) {
+ 
+ const PrepopulatedEngine* GetDefaultPrepopulatedEngine(
+     const std::vector<const PrepopulatedEngine*>& engines) {
+-  for (const auto* engine : engines) {
+-    if (engine->type == SEARCH_ENGINE_DUCKDUCKGO) {
+-      return engine;
+-    }
+-  }
++  for (const auto* engine : engines) {
++    if (engine->type == SEARCH_ENGINE_GOOGLE) {
++      return engine;
++    }
++  }
+   return engines.empty() ? nullptr : engines[0];
+ }
+ 
 -- 
-2.43.0
+2.45.0
