@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aerium Maintainers <dev@aerium-browser.org>
+Date: Thu, 5 Nov 2026 00:00:00 +0000
+Subject: [PATCH] Set custom default search engine and prepopulated entries
+
+---
+ .../search_engines/prepopulated_engines.json       | 14 ++++++++++++++
+ .../search_engines/template_url_prepopulate_data.cc|  4 ++--
+ 2 files changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/components/search_engines/prepopulated_engines.json b/components/search_engines/prepopulated_engines.json
+index 1111111..2222222 100644
+--- a/components/search_engines/prepopulated_engines.json
++++ b/components/search_engines/prepopulated_engines.json
+@@ -20,6 +20,20 @@
+   // The following engines are available globally.
+   "elements": {
++    "aerium_search": {
++      "name": "DuckDuckGo",
++      "keyword": "duckduckgo.com",
++      "favicon_url": "https://duckduckgo.com/favicon.ico",
++      "search_url": "https://duckduckgo.com/?q={searchTerms}",
++      "suggest_url": "https://duckduckgo.com/ac/?q={searchTerms}&type=list",
++      "type": "SEARCH_ENGINE_DUCKDUCKGO",
++      "id": 1001
++    },
+     "google": {
+       "name": "Google",
+       "keyword": "google.com",
+diff --git a/components/search_engines/template_url_prepopulate_data.cc b/components/search_engines/template_url_prepopulate_data.cc
+index 3333333..4444444 100644
+--- a/components/search_engines/template_url_prepopulate_data.cc
++++ b/components/search_engines/template_url_prepopulate_data.cc
+@@ -52,8 +52,8 @@ namespace TemplateURLPrepopulateData {
+ // Default search engine fallback when no region-specific profile is set
+ const PrepopulatedEngine* const kDefaultEngines[] = {
+-    &google,
+-    &bing,
++    &aerium_search,
++    &duckduckgo,
++    &google,
+ };
+ 
+ }  // namespace TemplateURLPrepopulateData
+-- 
+2.43.0
